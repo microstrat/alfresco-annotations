@@ -16,7 +16,6 @@
 package it.cosenonjaviste.alfresco.annotations.processors.runtime;
 
 import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.FatalBeanException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -27,50 +26,90 @@ import org.springframework.core.Ordered;
 import org.springframework.core.PriorityOrdered;
 import org.springframework.util.StringUtils;
 
+import java.util.Arrays;
+
+import static org.apache.commons.logging.LogFactory.getLog;
+
 /**
- * <tt>BeanFactoryPostProcessor</tt> for annotation processing during Spring context startup.
+ * <code>BeanFactoryPostProcessor</code> for annotation processing during Spring context startup.
  *
  * <br>
- * Mostly taken from https://jira.spring.io/browse/SPR-6343 and https://github.com/janesser/spring-framework/blob/SPR-6343/spring-context/src/main/java/org/springframework/context/annotation/ChildOfConfigurer.java
+ * Mostly taken from <a href="https://jira.spring.io/browse/SPR-6343">...</a> and
+ * <a href="https://github.com/janesser/spring-framework/blob/SPR-6343/spring-context/src/main/java/org/springframework/context/annotation/ChildOfConfigurer.java">...</a>
  *
  * @author Jan Esser
  * @cnj.editor Andrea Como
  */
 public abstract class AbstractPostProcessorConfigurer implements BeanFactoryPostProcessor, PriorityOrdered {
-
-    protected final Log logger = LogFactory.getLog(this.getClass());
-
+    private static final Log log = getLog(AbstractPostProcessorConfigurer.class);
     private int order = Ordered.LOWEST_PRECEDENCE;
 
+    public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
+        String[] beanDefinitionNames = beanFactory.getBeanDefinitionNames();
+        Arrays.stream(beanDefinitionNames)
+                .forEach(definitionName -> processBeanDefinition(beanFactory, definitionName));
+    }
+
+    private void processBeanDefinition(ConfigurableListableBeanFactory beanFactory, String definitionName) {
+        new BeanDefinitionProcessor(beanFactory, definitionName).process();
+    }
+
+    /**
+     * Performs the bean post-processing.
+     *
+     * @param beanFactory the bean factory
+     * @param bd the bean definition
+     * @param beanClassName the class name of the bean
+     * @param definitionName the definition name of the bean
+     * @throws FatalBeanException if there is an error processing the bean
+     */
+    protected abstract void processBeanDefinition(ConfigurableListableBeanFactory beanFactory,
+                                                  BeanDefinition bd,
+                                                  String beanClassName,
+                                                  String definitionName)
+            throws FatalBeanException;
+
+    @Override
+    public int getOrder() {
+        return order;
+    }
+
+    @SuppressWarnings("unused")
     public void setOrder(int order) {
         this.order = order;
     }
 
-    public int getOrder() {
-        return this.order;
-    }
+    private class BeanDefinitionProcessor {
+        private final ConfigurableListableBeanFactory beanFactory;
+        private final String definitionName;
+        private BeanDefinition beanDefinition;
+        private String beanClassName;
 
-    public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
-        String[] beanDefinitionNames = beanFactory.getBeanDefinitionNames();
-        for (String definitionName : beanDefinitionNames) {
+        public BeanDefinitionProcessor(ConfigurableListableBeanFactory beanFactory, String definitionName) {
+            this.beanFactory = beanFactory;
+            this.definitionName = definitionName;
+        }
+
+        public void process() {
             try {
-                final BeanDefinition bd = beanFactory.getBeanDefinition(definitionName);
-                final String beanClassName = bd.getBeanClassName();
+                beanDefinition = beanFactory.getBeanDefinition(definitionName);
+
+                beanClassName = beanDefinition.getBeanClassName();
                 if (StringUtils.hasText(beanClassName)) {
-                    try {
-                        processBeanDefinition(beanFactory, bd, beanClassName, definitionName);
-                    } catch (Exception e) {
-                        logger.error(e.getMessage(), e);
-                        throw new FatalBeanException("Unknown class defined.", e);
-                    }
+                    processBeanClass();
                 }
             } catch (NoSuchBeanDefinitionException ex) {
-                logger.warn(ex.getMessage());
-                continue;
+                log.warn(ex.getMessage());
+            }
+        }
+
+        private void processBeanClass() {
+            try {
+                processBeanDefinition(beanFactory, beanDefinition, beanClassName, definitionName);
+            } catch (Exception e) {
+                log.error(e.getMessage(), e);
+                throw new FatalBeanException("Unknown class defined.", e);
             }
         }
     }
-
-    protected abstract void processBeanDefinition(ConfigurableListableBeanFactory beanFactory, BeanDefinition bd, String beanClassName, String definitionName) throws FatalBeanException;
-
 }

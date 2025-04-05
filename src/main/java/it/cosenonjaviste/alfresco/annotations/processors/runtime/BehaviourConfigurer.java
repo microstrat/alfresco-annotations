@@ -29,6 +29,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Method;
@@ -37,14 +38,13 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * <tt>BeanPostProcessor</tt> for {@link Behaviour} annotation.
+ * <code>BeanPostProcessor</code> for {@link Behaviour} annotation.
  *
  * @author Andrea Como
  */
 @Component
 public class BehaviourConfigurer implements BeanPostProcessor, ApplicationContextAware{
-
-    private static Log LOGGER = LogFactory.getLog(BehaviourConfigurer.class);
+    private static final Log LOGGER = LogFactory.getLog(BehaviourConfigurer.class);
 
     // Cannot use injection to prevent premature bean creation
     private PolicyComponent policyComponent;
@@ -55,16 +55,16 @@ public class BehaviourConfigurer implements BeanPostProcessor, ApplicationContex
     private ApplicationContext applicationContext;
 
     @Override
-    public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+    public Object postProcessBeforeInitialization(@NonNull Object bean, @NonNull String beanName) throws BeansException {
         return bean;
     }
 
     @Override
-    public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-        if (bean instanceof ClassPolicy && bean.getClass().getAnnotation(Behaviour.class) != null) {
+    public Object postProcessAfterInitialization(@NonNull Object bean, @NonNull String beanName) throws BeansException {
+        if (bean instanceof ClassPolicy classPolicy && bean.getClass().getAnnotation(Behaviour.class) != null) {
             Behaviour behaviorAnnotation = bean.getClass().getAnnotation(Behaviour.class);
 
-            List<Method> methods = discoverEventsMethods((ClassPolicy) bean);
+            List<Method> methods = discoverEventsMethods(classPolicy);
 
             for (Method method : methods) {
                 org.alfresco.repo.policy.Behaviour behaviour = new JavaBehaviour(bean, method.getName(),
@@ -107,11 +107,10 @@ public class BehaviourConfigurer implements BeanPostProcessor, ApplicationContex
     private List<Method> discoverEventsMethods(ClassPolicy bean) {
         List<Method> methods = new ArrayList<>();
         Class<?>[] interfaces = bean.getClass().getInterfaces();
-        if (interfaces != null && interfaces.length > 0) {
-            for (Class<?> anInterface : interfaces) {
-                if (ClassPolicy.class.isAssignableFrom(anInterface)) {
-                    methods.addAll(Arrays.asList(anInterface.getDeclaredMethods()));
-                }
+
+        for (Class<?> anInterface : interfaces) {
+            if (ClassPolicy.class.isAssignableFrom(anInterface)) {
+                methods.addAll(Arrays.asList(anInterface.getDeclaredMethods()));
             }
         }
 
@@ -119,7 +118,7 @@ public class BehaviourConfigurer implements BeanPostProcessor, ApplicationContex
     }
 
     @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+    public void setApplicationContext(@NonNull ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
     }
 }

@@ -16,31 +16,29 @@
 package it.cosenonjaviste.alfresco.annotations.processors.runtime;
 
 import it.cosenonjaviste.alfresco.annotations.ChildOf;
-import org.apache.log4j.Logger;
-import org.springframework.beans.BeansException;
+import org.apache.commons.logging.Log;
 import org.springframework.beans.FatalBeanException;
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.core.Ordered;
-import org.springframework.core.PriorityOrdered;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import static org.apache.commons.logging.LogFactory.getLog;
+
 
 /**
- * <tt>BeanFactoryPostProcessor</tt> for {@link it.cosenonjaviste.alfresco.annotations.ChildOf} annotation.
+ * <code>BeanFactoryPostProcessor</code> for {@link ChildOf} annotation.
  * <br>
- * Mostly taken from https://jira.spring.io/browse/SPR-6343 and https://github.com/janesser/spring-framework/blob/SPR-6343/spring-context/src/main/java/org/springframework/context/annotation/ChildOfConfigurer.java
+ * Mostly taken from <a href="https://jira.spring.io/browse/SPR-6343">...</a> and
+ * <a href="https://github.com/janesser/spring-framework/blob/SPR-6343/spring-context/src/main/java/org/springframework/context/annotation/ChildOfConfigurer.java">...</a>
  *
  * @author Jan Esser
  * @cnj.editor Andrea Como
  */
 @Component
 public class ChildOfConfigurer extends AbstractPostProcessorConfigurer {
-
+    private static final Log log = getLog(ChildOfConfigurer.class);
 
     @Override
     protected void processBeanDefinition(ConfigurableListableBeanFactory beanFactory, BeanDefinition bd, String beanClassName, String definitionName) throws FatalBeanException {
@@ -55,7 +53,7 @@ public class ChildOfConfigurer extends AbstractPostProcessorConfigurer {
                 }
             }
         } catch (ClassNotFoundException e) {
-            logger.warn(String.format("ClassNotFoundException while searching for ChildOf annotation on bean name '%s' of type '%s'. This error is expected on Alfresco Community 4.2.c. for some classes in package 'org.alfresco.repo'", definitionName, beanClassName));
+            log.warn(String.format("ClassNotFoundException while searching for ChildOf annotation on bean name '%s' of type '%s'. This error is expected on Alfresco Community 4.2.c. for some classes in package 'org.alfresco.repo'", definitionName, beanClassName));
         }
     }
 }

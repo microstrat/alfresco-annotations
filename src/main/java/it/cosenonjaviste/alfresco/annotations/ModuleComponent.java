@@ -18,12 +18,11 @@ package it.cosenonjaviste.alfresco.annotations;
 import org.springframework.stereotype.Component;
 
 import java.lang.annotation.*;
-import java.util.List;
 
 /**
  * Stereotype annotation for defining a new
  * <a href="http://docs.alfresco.com/5.1/references/dev-extension-points-module-component.html">Module Component</a>.
- *
+ * <p>
  * Annotated class <strong>must</strong> extends {@link org.alfresco.repo.module.AbstractModuleComponent}
  * otherwise will not be registered
  *
@@ -38,7 +37,7 @@ public @interface ModuleComponent {
 
     /**
      * The globally unique module name. MUST be set to <strong>module name</strong>
-     * (<tt>module.id</tt> parameter from <tt>module.properties</tt>), usually <tt>artifactId</tt> in Maven projects
+     * (<code>module.id</code> parameter from <code>module.properties</code>), usually <code>artifactId</code> in Maven projects
      *
      * @return module identifier
      */
@@ -66,7 +65,7 @@ public @interface ModuleComponent {
     String sinceVersion();
 
     /**
-     * Set the minimum module version number to which this component applies. Default is <tt>0.0</tt>
+     * Set the minimum module version number to which this component applies. Default is <code>0.0</code>
      *
      * @return minimum module version required
      */
@@ -80,7 +79,7 @@ public @interface ModuleComponent {
     boolean executeOnceOnly() default true;
 
     /**
-     * Array of <tt>ModuleComponent</tt> {@link #name()} to execute before this component
+     * Array of <code>ModuleComponent</code> {@link #name()} to execute before this component
      *
      * @return array of module component identifiers
      */
