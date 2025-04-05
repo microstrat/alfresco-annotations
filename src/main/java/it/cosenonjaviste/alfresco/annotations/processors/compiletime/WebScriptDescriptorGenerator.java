@@ -34,7 +34,7 @@ public class WebScriptDescriptorGenerator extends AbstractProcessor {
 
     private ProcessLog log;
 
-    private ResourceWriter resourceWriter;
+    private ResourceWriter<WebScriptDescriptor> resourceWriter;
 
     @Override
     public synchronized void init(ProcessingEnvironment processingEnv) {
@@ -84,7 +84,7 @@ public class WebScriptDescriptorGenerator extends AbstractProcessor {
 
     private String extractWebScriptName(String value) {
         if (value.contains(".")) {
-            return value.substring(value.lastIndexOf(".") + 1, value.length());
+            return value.substring(value.lastIndexOf(".") + 1);
         } else {
             return value;
         }

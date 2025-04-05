@@ -15,29 +15,24 @@
  */
 package it.cosenonjaviste.alfresco.annotations.processors.compiletime;
 
-import java.io.IOException;
-import java.io.Writer;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import freemarker.cache.ClassTemplateLoader;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import freemarker.template.TemplateExceptionHandler;
 
+import java.io.IOException;
+import java.io.Writer;
+import java.util.HashMap;
+import java.util.Map;
+
 class FreemarkerHelper {
-
-    private static final Logger LOGGER = Logger.getLogger(FreemarkerHelper.class.getName());
-
     private static FreemarkerHelper helper;
 
     private final Configuration configuration;
 
     private FreemarkerHelper() {
-        configuration = new Configuration();
+        configuration = new Configuration(Configuration.DEFAULT_INCOMPATIBLE_IMPROVEMENTS);
         configuration.setDefaultEncoding("UTF-8");
         configuration
                 .setTemplateLoader(new ClassTemplateLoader(this.getClass(), "/META-INF/templates"));
@@ -51,7 +46,6 @@ class FreemarkerHelper {
         try {
             return new TemplateBuilder(helper.configuration.getTemplate(template));
         } catch (final IOException e) {
-            LOGGER.log(Level.SEVERE, e.getMessage(), e);
             throw new IllegalArgumentException(String.format("Template %s not found", template), e);
         }
     }
@@ -76,7 +70,6 @@ class FreemarkerHelper {
             try {
                 template.process(model, writer);
             } catch (TemplateException | IOException e) {
-                LOGGER.log(Level.SEVERE, e.getMessage(), e);
                 throw new IllegalArgumentException(e);
             }
         }

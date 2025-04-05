@@ -21,11 +21,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
 
 /**
- * <tt>BeanPostProcessor</tt> for {@link it.cosenonjaviste.alfresco.annotations.JsExtension} annotation.
+ * <code>BeanPostProcessor</code> for {@link it.cosenonjaviste.alfresco.annotations.JsExtension} annotation.
  *
  * <p>
  *     This processor register {@link JsExtension#value()} as <strong>extension name</strong>
@@ -35,16 +36,16 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class JsExtensionConfigurer implements BeanPostProcessor {
+    private static final Log LOGGER = LogFactory.getLog(JsExtensionConfigurer.class);
 
-    private static Log LOGGER = LogFactory.getLog(BehaviourConfigurer.class);
-
-    public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+    @Override
+    public Object postProcessBeforeInitialization(@NonNull Object bean, @NonNull String beanName) throws BeansException {
         return bean;
     }
 
-    public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-        if (bean instanceof BaseProcessorExtension && bean.getClass().getAnnotation(JsExtension.class) != null) {
-            BaseProcessorExtension extension = (BaseProcessorExtension) bean;
+    @Override
+    public Object postProcessAfterInitialization(@NonNull Object bean, @NonNull String beanName) throws BeansException {
+        if (bean instanceof BaseProcessorExtension extension && bean.getClass().getAnnotation(JsExtension.class) != null) {
             extension.setExtensionName(extension.getClass().getAnnotation(JsExtension.class).value());
             LOGGER.debug("Extension name set to bean " + beanName);
         }

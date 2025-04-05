@@ -7,8 +7,9 @@ import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.*;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.mockito.Mockito.*;
 
@@ -32,7 +33,7 @@ public class BehaviourConfigurerTest {
     private BehaviourConfigurer configurer;
 
     @Test
-    public void shouldRegisterOnUpdateProperties() throws Exception {
+    public void shouldRegisterOnUpdateProperties() {
         when(prefixResolver.getNamespaceURI(PREFIX)).thenReturn(NAMESPACE);
 
         configurer.postProcessAfterInitialization(new ClassPolicyMocks.UpdateProperties(), "updateProperties");
@@ -41,21 +42,21 @@ public class BehaviourConfigurerTest {
         verify(policyComponent).bindClassBehaviour(
                 eq(QName.createQName(NamespaceService.ALFRESCO_URI, "onUpdateProperties")),
                 eq(QName.createQName(NAMESPACE, "content")),
-                Matchers.<org.alfresco.repo.policy.Behaviour>any());
+                any(org.alfresco.repo.policy.Behaviour.class));
     }
 
     @Test
-    public void shouldRegisterOnCreateNodeAndOnDeleteNode() throws Exception {
+    public void shouldRegisterOnCreateNodeAndOnDeleteNode() {
 
         configurer.postProcessAfterInitialization(new ClassPolicyMocks.CreateDeleteNode(), "createDeleteNode");
 
         verify(policyComponent).bindClassBehaviour(
                 eq(QName.createQName(NamespaceService.ALFRESCO_URI, "onCreateNode")),
                 eq(QName.createQName(NAMESPACE, "content")),
-                Matchers.<org.alfresco.repo.policy.Behaviour>any());
+                any(org.alfresco.repo.policy.Behaviour.class));
         verify(policyComponent).bindClassBehaviour(
                 eq(QName.createQName(NamespaceService.ALFRESCO_URI, "onDeleteNode")),
                 eq(QName.createQName(NAMESPACE, "content")),
-                Matchers.<org.alfresco.repo.policy.Behaviour>any());
+                any(org.alfresco.repo.policy.Behaviour.class));
     }
 }

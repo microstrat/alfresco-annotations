@@ -21,7 +21,7 @@ import javax.annotation.processing.ProcessingEnvironment;
 import java.io.Writer;
 
 /**
- * Fill template <tt>webscript.desc.xml.ftl</tt> with {@link WebScriptDescriptor} values
+ * Fill template <code>webscript.desc.xml.ftl</code> with {@link WebScriptDescriptor} values
  *
  * @author Andrea Como
  */

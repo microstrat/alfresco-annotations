@@ -16,6 +16,8 @@
 package it.cosenonjaviste.alfresco.annotations.processors.runtime;
 
 import it.cosenonjaviste.alfresco.annotations.WebScript;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.FatalBeanException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -25,20 +27,20 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 /**
- * <tt>BeanFactoryPostProcessor</tt> for {@link WebScriptConfigurer} annotation.
- *
- * Creates webscript bean name according to Alfresco requirements (<tt>webscript.[name].[http-method]</tt>)
+ * <code>BeanFactoryPostProcessor</code> for {@link WebScriptConfigurer} annotation.
+ * <p>
+ * Creates webscript bean name according to Alfresco requirements (<code>webscript.[name].[http-method]</code>)
  * from {@link WebScript} instance
  *
  * @author Andrea Como
  */
 @Component
 public class WebScriptConfigurer extends AbstractPostProcessorConfigurer {
+    private static final Log log = LogFactory.getLog(WebScriptConfigurer.class);
 
     @Override
     protected void processBeanDefinition(ConfigurableListableBeanFactory beanFactory, BeanDefinition bd, String beanClassName, String definitionName) throws FatalBeanException {
-        if (beanFactory instanceof DefaultListableBeanFactory) {
-            DefaultListableBeanFactory factory = (DefaultListableBeanFactory) beanFactory;
+        if (beanFactory instanceof DefaultListableBeanFactory factory) {
             try {
                 final WebScript webScript = AnnotationUtils.findAnnotation(Class.forName(beanClassName), WebScript.class);
                 if (webScript != null) {
@@ -52,10 +54,10 @@ public class WebScriptConfigurer extends AbstractPostProcessorConfigurer {
                     }
                 }
             } catch (ClassNotFoundException e) {
-                logger.warn(String.format("ClassNotFoundException while searching for ChildOf annotation on bean name '%s' of type '%s'. This error is expected on Alfresco Community 4.2.c. for some classes in package 'org.alfresco.repo'", definitionName, beanClassName));
+                log.warn(String.format("ClassNotFoundException while searching for ChildOf annotation on bean name '%s' of type '%s'. This error is expected on Alfresco Community 4.2.c. for some classes in package 'org.alfresco.repo'", definitionName, beanClassName));
             }
         } else {
-            logger.error(String.format("Unable to register '%s' as webscript because beanFactory is not instance of 'DefaultListableBeanFactory'", definitionName));
+            log.error(String.format("Unable to register '%s' as webscript because beanFactory is not instance of 'DefaultListableBeanFactory'", definitionName));
         }
     }
 }

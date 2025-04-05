@@ -8,12 +8,11 @@ import org.junit.Test;
 
 import java.io.StringWriter;
 import java.io.Writer;
-import java.lang.annotation.Annotation;
 
 import static org.junit.Assert.*;
 
 /**
- * Tests for {@link WebScriptDescriptorWriter#doWrite(Annotation, Writer)}
+ * Tests for {@link WebScriptDescriptorWriter#doWrite(WebScriptDescriptor, Writer)}
  *
  * @author Andrea Como
  */
@@ -22,8 +21,7 @@ public class WebScriptDescriptorWriterTest {
     @Test
     public void shouldGenerateDefaultDescriptor() {
 
-        TestWebscript1 webscript1 = new TestWebscript1();
-        WebScriptDescriptor annotation = webscript1.getClass().getAnnotation(WebScriptDescriptor.class);
+        WebScriptDescriptor annotation = TestWebscript1.class.getAnnotation(WebScriptDescriptor.class);
 
         String descriptor = fillTemplateIntoString(annotation);
 
@@ -39,8 +37,7 @@ public class WebScriptDescriptorWriterTest {
     @Test
     public void shouldGenerateMultipleUri() {
 
-        TestWebscript2 webscript2 = new TestWebscript2();
-        WebScriptDescriptor annotation = webscript2.getClass().getAnnotation(WebScriptDescriptor.class);
+        WebScriptDescriptor annotation = TestWebscript2.class.getAnnotation(WebScriptDescriptor.class);
 
         String descriptor = fillTemplateIntoString(annotation);
 
@@ -52,8 +49,7 @@ public class WebScriptDescriptorWriterTest {
     @Test
     public void shouldHaveAuthAndRunAsAttribute() {
 
-        TestWebscript3 webscript3 = new TestWebscript3();
-        WebScriptDescriptor annotation = webscript3.getClass().getAnnotation(WebScriptDescriptor.class);
+        WebScriptDescriptor annotation = TestWebscript3.class.getAnnotation(WebScriptDescriptor.class);
 
         String descriptor = fillTemplateIntoString(annotation);
 
@@ -64,8 +60,7 @@ public class WebScriptDescriptorWriterTest {
     @Test
     public void shouldHaveJsonDefaultFormat() {
 
-        TestWebscript4 webscript4 = new TestWebscript4();
-        WebScriptDescriptor annotation = webscript4.getClass().getAnnotation(WebScriptDescriptor.class);
+        WebScriptDescriptor annotation = TestWebscript4.class.getAnnotation(WebScriptDescriptor.class);
 
         String descriptor = fillTemplateIntoString(annotation);
 
@@ -76,8 +71,7 @@ public class WebScriptDescriptorWriterTest {
     @Test
     public void shouldHaveTransactionLevel() {
 
-        TestWebscript5 webscript5 = new TestWebscript5();
-        WebScriptDescriptor annotation = webscript5.getClass().getAnnotation(WebScriptDescriptor.class);
+        WebScriptDescriptor annotation = TestWebscript5.class.getAnnotation(WebScriptDescriptor.class);
 
         String descriptor = fillTemplateIntoString(annotation);
 
